@@ -1,0 +1,11 @@
+# Büyük veri dosyaları
+gps_february_2026.json
+merged_train_data.json
+speed_february_2026.json
+data/trains/
+
+# Kütüphaneler ve sistem dosyaları
+node_modules/
+.env
+dist/
+build/
