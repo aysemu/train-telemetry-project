@@ -35,13 +35,13 @@ async function mergeFiles(gpsFile, speedFile, outputFile) {
             speedLookup[id].push({ time, speed: s.loco_speed });
         });
 
-        // 2. GPS verilerini işle ve en yakın hızı bul
+        // 2. GPS verilerini işle ve en yakın hızı bulma
         let mergedList = gpsRaw.map(gps => {
             const id = gps.device_id;
             const gpsTime = new Date(gps.timestamp.$date).getTime();
             
             let bestSpeed = 0;
-            let minDiff = 60000; // 60 saniye tolerans (Sensör farkları için)
+            let minDiff = 60000; // 60 saniye fark sensör için
 
             if (speedLookup[id]) {
                 // O trenin hız kayıtları içinde zamansal olarak en yakını bul

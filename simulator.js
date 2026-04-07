@@ -10,7 +10,7 @@ const trainDataDir = path.join(__dirname, 'data', 'trains');
 function sendCsvTrainData(fileName, trainId) {
     const results = [];
     if (!fs.existsSync(fileName)) {
-        console.warn(`⚠️ Uyarı: ${fileName} dosyası bulunamadı, bu tren atlanıyor.`);
+        console.warn(` Uyarı: ${fileName} dosyası bulunamadı, bu tren atlanıyor.`);
         return;
     }
 
@@ -39,7 +39,7 @@ function sendCsvTrainData(fileName, trainId) {
         });
 }
 
-// --- 2. DİNAMİK JSON TRENLERİ (E-SERİSİ) ---
+// --- 2. DİNAMİK JSON TRENLERİ  ---
 function startJsonSimulation() {
     if (!fs.existsSync(trainDataDir)) return;
     
@@ -63,20 +63,20 @@ function startJsonSimulation() {
                     timestamp: new Date()
                 };
                 client.publish(`tren/telemetri/${trainId}`, JSON.stringify(payload));
-                // JSON loglarını terminali kirletmemesi için yoruma alabilirsin
-                // console.log(`📡 [JSON] ${trainId} gönderildi.`);
+                // JSON loglarını terminali kirletmemesi için yoruma aldım çok kasıyo
+                // console.log(` [JSON] ${trainId} gönderildi.`);
                 index++;
             } else {
                 index = 0;
             }
-        }, 1000);
+        }, 3000);
     });
 }
 
 client.on('connect', () => {
     console.log("✅ MQTT Bağlantısı Başarılı. Karma Simülasyon Başlıyor...");
     
-    // Manuel CSV Trenleri (Dosya isimlerini kontrol et!)
+    // Manuel CSV Trenleri ekledim diğerleri hep durağan
     sendCsvTrainData('test_data.csv', 'Tren-1');
     sendCsvTrainData('e5008_data.csv', 'Tren-2');
 

@@ -5,7 +5,7 @@ function splitTrains(inputFile) {
     const rawData = fs.readFileSync(inputFile);
     const allData = JSON.parse(rawData);
 
-    // Trenleri depolayacağımız klasörü oluşturalım
+    // Trenleri depolayacağımız klasör
     const outputDir = path.join(__dirname, 'data', 'trains');
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
@@ -20,9 +20,9 @@ function splitTrains(inputFile) {
         grouped[item.trainId].push(item);
     });
 
-    // 2. Her grubu kendi zaman sırasına göre diz ve dosyaya yaz
+    // 2. Her grubu kendi zaman sırasına göre dizre ve dosyaya yazar
     Object.keys(grouped).forEach(trainId => {
-        // Zaman damgasına göre küçükten büyüğe sırala (Kronolojik sıra)
+        // Zaman damgasına göre küçükten büyüğe sıralama (Kronolojik sıra)
         const sortedData = grouped[trainId].sort((a, b) => 
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
