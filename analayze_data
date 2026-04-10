@@ -16,7 +16,7 @@ async function analyzeTrains(inputFile) {
         crlfDelay: Infinity
     });
 
-    console.log("🔍 Veriler taranıyor, lütfen bekleyin...");
+    console.log(" Veriler taranıyor, lütfen bekleyin...");
 
     for await (const line of rl) {
         if (!line.trim()) continue; // Boş satırları atla
@@ -25,8 +25,8 @@ async function analyzeTrains(inputFile) {
             const item = JSON.parse(line);
             totalLineCount++;
 
-            // 'trainId' veya 'device_id' hangisi varsa onu kullan
-            const id = item.trainId || item.device_id || "Bilinmiyor";
+            //  'device_id' hangisi varsa onu kullan
+            const id = item.device_id || "Bilinmiyor";
             
             // Hız bilgisini bul (farklı dosyalarda loco_speed veya speed olabilir)
             const speedValue = item.speed !== undefined ? item.speed : (item.loco_speed !== undefined ? item.loco_speed : 0);
@@ -53,11 +53,11 @@ async function analyzeTrains(inputFile) {
     }
 
     if (totalLineCount === 0) {
-        console.error("❌ Dosya içinde okunabilir JSON verisi bulunamadı.");
+        console.error(" Dosya içinde okunabilir JSON verisi bulunamadı.");
         return;
     }
 
-    console.log("\n📊 TREN VERİ ANALİZ RAPORU (HAM VERİ)");
+    console.log("\n TREN VERİ ANALİZ RAPORU (HAM VERİ)");
     console.log("------------------------------------------------------------");
     console.table(Object.keys(report).map(id => ({
         "Tren ID": id,
@@ -68,7 +68,7 @@ async function analyzeTrains(inputFile) {
     })));
 
     console.log("------------------------------------------------------------");
-    console.log(`🌍 TOPLAM İŞLENEN SATIR: ${totalLineCount}`);
+    console.log(` TOPLAM İŞLENEN SATIR: ${totalLineCount}`);
 }
 
 // Analiz etmek istediğin dosyayı buraya yaz
