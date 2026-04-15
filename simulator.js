@@ -74,7 +74,7 @@ function startJsonSimulation() {
 }
 
 client.on('connect', () => {
-    console.log("✅ MQTT Bağlantısı Başarılı. Karma Simülasyon Başlıyor...");
+    console.log("MQTT Bağlantısı Başarılı. Karma Simülasyon Başlıyor...");
     
     // Manuel CSV Trenleri ekledim diğerleri hep durağan
     sendCsvTrainData('test_data.csv', 'Tren-1');
