@@ -26,7 +26,7 @@ function sendCsvTrainData(fileName, trainId) {
                         speed: Number(results[index].LOCO_SPEED) ,
                         lat: Number(results[index].gps_latitude),
                         lon: Number(results[index].gps_longitude),
-                        temperature: (60 + Math.random() * 20),
+                        temperature: Number((60 + Math.random() * 20).toFixed(2)),
                         timestamp: new Date()
                     };
                     client.publish(`tren/telemetri/${trainId}`, JSON.stringify(payload));
