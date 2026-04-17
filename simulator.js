@@ -30,7 +30,7 @@ function sendCsvTrainData(fileName, trainId) {
                         timestamp: new Date()
                     };
                     client.publish(`tren/telemetri/${trainId}`, JSON.stringify(payload));
-                    console.log(`🚀 [CSV] ${trainId} -> Hız: ${payload.speed}, Konum: ${payload.lat}, ${payload.lon}`);
+                    console.log(` [CSV] ${trainId} -> Hız: ${payload.speed}, Konum: ${payload.lat}, ${payload.lon}`);
                     index++;
                 } else {
                     index = 0; // Başa dön
