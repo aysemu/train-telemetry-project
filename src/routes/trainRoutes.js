@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const trainController = require("../controllers/trainController");
+const { protect, authorize } = require("../middleware/authMiddleware");
 
-// http://localhost:4000/api/trains/  altındaki yollar:
-router.get("/", trainController.getLatestTrains);
-router.get("/:id/history", trainController.getTrainHistory);
-router.get("/telemetry", trainController.getFilteredTelemetry);
+// Sadece giriş yapanlar (Makinist, Engineer, Admin) görebilir
+router.get("/", protect, trainController.getLatestTrains);
+
+// Sadece Engineer ve Admin geçmişi görebilir
+router.get("/:id/history", protect, authorize("admin", "engineer"), trainController.getTrainHistory);
 
 module.exports = router;
