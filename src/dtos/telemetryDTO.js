@@ -1,6 +1,6 @@
 const { z } = require("zod");
 
-// Telemetri verisinin olması gereken şekli
+// Telemetri verisi
 const telemetrySchemaDTO = z.object({
   trainId: z.string().min(1, "Train ID boş olamaz"),
   speed: z.number().min(0, "Hız negatif olamaz"),
