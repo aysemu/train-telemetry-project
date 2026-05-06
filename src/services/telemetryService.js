@@ -12,7 +12,7 @@ class TelemetryService {
 
         this.mqttClient.on('connect', () => {
             this.mqttClient.subscribe('tren/telemetri/#');
-            console.log("📡 TelemetryService: MQTT üzerinden trenler dinleniyor...");
+            console.log(" TelemetryService: MQTT üzerinden trenler dinleniyor...");
         });
 
         this.mqttClient.on('message', (topic, message) => this.handleMqttMessage(message));

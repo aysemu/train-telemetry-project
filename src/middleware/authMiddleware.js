@@ -8,7 +8,7 @@ const protect = (req, res, next) => {
         try {
             token = req.headers.authorization.split(" ")[1];
             // Token'ı doğrula
-            const decoded = jwt.verify(token, "gizli_anahtar_buraya"); // Login'deki anahtarla aynı olmalı
+            const decoded = jwt.verify(token, process.env.JWT_SECRET); // Login'deki anahtarla aynı olmalı //HOCAM HATA BURADAYMŞ HATALI TOKEN GİRMİŞİM DÜZENLERKEN
             req.user = decoded; // Kullanıcı bilgilerini (id, role, trainId) req nesnesine ekle
             next();
         } catch (error) {

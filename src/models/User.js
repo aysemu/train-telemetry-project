@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   phone: { 
     type: String, 
     // Makinist girişi için bunu kullanacağız
-    default: "" 
+    
   },
   password: { 
     type: String, 
@@ -22,7 +22,11 @@ const userSchema = new mongoose.Schema({
   role: { 
     type: String, 
     enum: ['admin', 'engineer', 'makinist'], 
-    default: 'engineer' 
+    
+  },
+  trainId: { 
+    type: String, 
+    default: null // Makinist atanmazsa null kalır
   },
   assignedTrain: { 
     type: String, 
@@ -33,7 +37,10 @@ const userSchema = new mongoose.Schema({
     type: Date, 
     default: Date.now 
   },
-    // models/User.js içine ekle:
+  startDate: { 
+    type: Date // İşe başlama tarihi için yeni alan
+  }, 
+  
   tcNo: {
      type: String, default: "" 
   },

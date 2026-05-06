@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
     try {
-        // Frontend'den gelen assignedTrain bilgisini de alıyoruz
         const { identifier, password, role, assignedTrain } = req.body; 
 
         const user = await User.findOne({
@@ -17,46 +16,55 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: "Kullanıcı bulunamadı veya rol hatalı." });
         }
 
-        // --- KRİTİK EKLEME: TREN DOĞRULAMA ---
-        if (role === "makinist") {
-            // Eğer makinistin seçtiği tren, DB'deki trenle aynı değilse girişi engelle
-            if (user.assignedTrain !== assignedTrain) {
-                return res.status(401).json({ 
-                    message: `Yetki hatası! Siz ${user.assignedTrain} trenine atanmışsınız, ${assignedTrain} ile giriş yapamazsınız.` 
-                });
-            }
+        // --- TREN DOĞRULAMA ---
+        if (role === "makinist" && user.assignedTrain !== assignedTrain) {
+            return res.status(401).json({ 
+                message: `Yetki hatası! Siz ${user.assignedTrain} trenine atanmışsınız.` 
+            });
         }
-        // -------------------------------------
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: "Hatalı şifre." });
         }
 
-        // Token oluşturma ve başarılı yanıt...
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+        // BAŞARILI YANIT BURADA OLMALI (TRY İÇİNDE)
         res.status(200).json({
             token,
             user: {
                 id: user._id,
                 name: user.name,
+                email: user.email,
                 role: user.role,
-                trainId: user.assignedTrain 
+                trainId: user.assignedTrain, // Frontend "trainId" bekliyor
+                phone: user.phone || "",
+                tcNo: user.tcNo || "",
+                address: user.address || "",
+                bloodGroup: user.bloodGroup || "",
+                disabilityStatus: user.disabilityStatus || "Yok",
+                startDate: user.startDate || null
             }
         });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Sunucu hatası." });
     }
 };
+// backend/controllers/authController.js
+
 exports.register = async (req, res) => {
+    console.log("Frontend'den Gelen Ham Veri:", req.body);
+    const { name, email, password, role, phone, tcNo, assignedTrain } = req.body;
+
     try {
-        const { name, email, password, phone, role, assignedTrain } = req.body;
-
-        // E-posta kontrolü
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: "Bu e-posta zaten kullanımda." });
-
-        // Şifre şifreleme
+        // TC veya Email ile zaten kayıtlı mı kontrolü
+        let user = await User.findOne({ $or: [{ email }, { tcNo }] });
+        if (user) {
+            return res.status(400).json({ message: "Bu email veya TC ile kayıtlı kullanıcı zaten var." });
+        }
+        //şifreleme işlemi
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -64,15 +72,16 @@ exports.register = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            phone,
             role,
-            assignedTrain: role === "makinist" ? assignedTrain : null // Sadece makinistler için tren atanır
+            phone,
+            tcNo,
+            assignedTrain// Makinistse tren id'sini eşliyoruz
         });
 
         await newUser.save();
-        res.status(201).json({ message: "Kayıt başarılı!" });
+        res.status(201).json({ message: "Kullanıcı başarıyla oluşturuldu." });
     } catch (err) {
-        res.status(500).json({ message: "Kayıt sırasında sunucu hatası oluştu." });
+        res.status(500).json({ message: "Sunucu hatası." });
     }
 };
 
@@ -118,32 +127,22 @@ exports.deleteAllUsers = async (req, res) => {
 // profile sayfasındaki güncellemeleri kaydetmek için
 exports.updateProfile = async (req, res) => {
   try {
-    const { email, name, phone, tcNo, address, bloodGroup, disabilityStatus } = req.body;
+    // Frontend'den gelen 'id'yi alıyoruz
+    const { id, name, phone, tcNo, address, bloodGroup, disabilityStatus, startDate } = req.body;
 
-    // Email üzerinden kullanıcıyı bul ve güncelle
-    const updatedUser = await User.findOneAndUpdate(
-      { email: email }, 
-      { 
-        name, 
-        phone, 
-        tcNo, 
-        address, 
-        bloodGroup, 
-        disabilityStatus 
-      },
-      { new: true } // Güncellenmiş veriyi geri döndür
+    const updatedUser = await User.findByIdAndUpdate(
+      id, // Artık doğrudan ID ile arıyoruz, çok daha güvenli!
+      { name, phone, tcNo, address, bloodGroup, disabilityStatus, startDate },
+      { returnDocument: 'after' }
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+      return res.status(404).json({ message: "Kullanıcı bulunamadı (ID hatalı)" });
     }
 
-    res.status(200).json({ 
-      message: "Profil başarıyla güncellendi", 
-      user: updatedUser 
-    });
+    res.status(200).json({ message: "Profil başarıyla güncellendi", user: updatedUser });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Sunucu hatası oluştu" });
+    res.status(500).json({ message: "Sunucu hatası" });
   }
 };
