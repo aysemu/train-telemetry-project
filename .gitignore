@@ -3,6 +3,8 @@ gps_february_2026.json
 merged_train_data.json
 speed_february_2026.json
 data/trains/
+e5008_train_data.csv
+test_data.csv
 
 # Kütüphaneler ve sistem dosyaları
 node_modules/
